@@ -1,0 +1,7 @@
+.cache/
+build/
+.vscode/
+CMakeFiles/
+.vcode/
+out/
+.vs/
