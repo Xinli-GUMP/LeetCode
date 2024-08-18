@@ -1,77 +1,95 @@
 /*
 
-给你一棵 完全二叉树 的根节点 root ，求出该树的节点个数。
+给你一个字符串 columnTitle ，表示 Excel 表格中的列名称。返回
+该列名称对应的列序号 。
 
-完全二叉树
-的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都达到最大值，并且最下面一层的节点都集中在该层最左边的若干位置。若最底层为第
-h 层，则该层包含 1~ 2h 个节点。
+例如：
+
+A -> 1
+B -> 2
+C -> 3
+...
+Z -> 26
+AA -> 27
+AB -> 28
+...
 
 */
 
-// 解题思路：
-// 根据完全二叉树的性质可知，左子树的深度l_depth永远为当前节点的深度减一,
-// 如果左子树的深度等于右子树的深度，那说明左子树为满二叉树,拥有2^l_depth个节点；
-// 如果左子树的深度不等于右子树的深度，那说明右子树为满二叉树，2^r_depth个节点；
-// 先计算整棵树的深度，同时也得到了左子树的深度，再计算右子树的深度，判断左右子树深度是否相等，即可得到一半满二叉树的节点个数，然后递归求另一半二叉树。
-#include <functional>
+/* 解题思路:
+1.十六进制转十进制问题
+2.反向遍历字符串，'A' = 65, 所以每个遍历到的字符 ch 的十进制 dec_ch = ch - 64
+3.每一位的值为dec_ch * 26^i(位数)
+4.答案把各个dec_ch相加就行
+*/
+#include <algorithm>
+#include <cmath>
+#include <ios>
 #include <iostream>
-#include <climits>
+#include <vector>
 using namespace std;
 
-struct TreeNode
+int integerPower(int base, int exponent)
 {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode() : val(0), left(nullptr), right(nullptr){};
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr){};
-    TreeNode(int x, TreeNode *left, TreeNode *right)
-        : val(x), left(left), right(right){};
-    ~TreeNode()
+    int result = 1;
+    while (exponent > 0)
     {
-        delete left;
-        delete right;
+        result *= base;
+        --exponent;
     }
-};
-int countNodes(TreeNode *root)
+    return result;
+}
+
+int titleToNumber(string columnTitle)
 {
-    std::function< int(TreeNode *) > count_depth = [](TreeNode *root)
-    {
-        int depth{};
-        while (root != nullptr)
-        {
-            root = root->left;
-            ++depth;
-        }
-        return depth;
-    };
+    int ans = 0;
+    const int base = 26;
 
-    std::function< int(TreeNode *, int) > count_nums =
-        [&](TreeNode *root, int l_depth)
-    {
-        if (root == nullptr)
-        {
-            return 0;
-        }
-        int r_depth = count_depth(root->right);
-        if (l_depth == r_depth)
-        {
-            return (1 >> l_depth) + count_nums(root->right, r_depth - 1);
-        }
-        return (1 >> r_depth) + count_nums(root->left, l_depth - 1);
-    };
+    // Reverse the string for easier calculation
+    std::string reversedTitle = columnTitle;
+    std::reverse(reversedTitle.begin(), reversedTitle.end());
 
-    int depth = count_depth(root);
-    int ans = count_nums(root, depth - 1);
+    // Iterate through each character in the reversed string
+    for (size_t i = 0; i < reversedTitle.size(); ++i)
+    {
+        char ch = reversedTitle[i];
+
+        // Check if the character is valid (A-Z)
+        if (ch >= 'A' && ch <= 'Z')
+        {
+            // Calculate the decimal value of the character
+            int dec_ch = (ch - 'A' + 1);
+
+            // Check for overflow before multiplying
+            if (INT_MAX / base < ans ||
+                (INT_MAX - (ans * integerPower(base, i))) <
+                    dec_ch * integerPower(base, i))
+            {
+                throw std::overflow_error(
+                    "Column title is too long and causes an overflow.");
+            }
+
+            // Add the value to the answer
+            ans += dec_ch * integerPower(base, i);
+        } else
+        {
+            // Invalid character found
+            throw std::invalid_argument("Invalid character in column title: " +
+                                        std::string(1, ch));
+        }
+    }
+
     return ans;
 }
 
-int main(int argc, char const *argv[])
+// Helper function to calculate power
+long integerPower(int base, size_t exp)
 {
-    TreeNode *root = new TreeNode(1);
-    root->left = new TreeNode(2);
-    root->right = new TreeNode(3);
-    root->left->left = new TreeNode(4);
-    cout << countNodes(root);
-    return 0;
+    long result = 1;
+    for (size_t i = 0; i < exp; ++i)
+    {
+        result *= base;
+    }
+    return result;
 }
+int main() {}

@@ -13,7 +13,9 @@ struct TreeNode
 TreeNode *findNodeIterative(TreeNode *root, int target)
 {
     if (root == nullptr)
+    {
         return nullptr;
+    }
 
     stack< TreeNode * > s;
     s.push(root);

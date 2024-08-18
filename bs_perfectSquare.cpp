@@ -1,0 +1,48 @@
+/*
+
+给你一个正整数 num 。如果 num 是一个完全平方数，则返回 true ，否则返回 false 。
+
+完全平方数
+是一个可以写成某个整数的平方的整数。换句话说，它可以写成某个整数和自身的乘积。
+
+不能使用任何内置的库函数，如  sqrt 。
+
+*/
+
+// 解题思路：
+#include <iostream>
+using namespace std;
+
+bool isPerfectSquare(int num)
+{
+    if (num == 1)
+    {
+        return true;
+    }
+    int left{};
+    int right{num};
+    int mid{};
+    long ans{};
+    while (left <= right)
+    {
+        mid = left + (right - left) / 2;
+        ans = num / mid;
+        if (ans * ans == num)
+        {
+            return true;
+        }
+        if (ans < mid)
+        {
+            right = mid - 1;
+        } else
+        {
+            left = mid + 1;
+        }
+    }
+    return false;
+}
+
+int main(int argc, char const *argv[])
+{
+    cout << isPerfectSquare(1);
+}
