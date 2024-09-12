@@ -1,95 +1,151 @@
-/*
-
-给你一个字符串 columnTitle ，表示 Excel 表格中的列名称。返回
-该列名称对应的列序号 。
-
-例如：
-
-A -> 1
-B -> 2
-C -> 3
-...
-Z -> 26
-AA -> 27
-AB -> 28
-...
-
-*/
-
-/* 解题思路:
-1.十六进制转十进制问题
-2.反向遍历字符串，'A' = 65, 所以每个遍历到的字符 ch 的十进制 dec_ch = ch - 64
-3.每一位的值为dec_ch * 26^i(位数)
-4.答案把各个dec_ch相加就行
-*/
-#include <algorithm>
-#include <cmath>
-#include <ios>
+#include <cstddef>
 #include <iostream>
-#include <vector>
-using namespace std;
 
-int integerPower(int base, int exponent)
+template < typename T > class LinkedList
 {
-    int result = 1;
-    while (exponent > 0)
+private:
+    struct Node
     {
-        result *= base;
-        --exponent;
+        T data;
+        Node *nex;
+        Node *pre;
+        Node(const T &data) : data(data), nex(nullptr), pre(nullptr) {}
+    };
+
+    Node *head;
+    Node *tail;
+    size_t len;
+public:
+    LinkedList() : head(nullptr), tail(nullptr), len(0) {}
+    ~LinkedList()
+    {
+        clear();
     }
-    return result;
-}
 
-int titleToNumber(string columnTitle)
-{
-    int ans = 0;
-    const int base = 26;
-
-    // Reverse the string for easier calculation
-    std::string reversedTitle = columnTitle;
-    std::reverse(reversedTitle.begin(), reversedTitle.end());
-
-    // Iterate through each character in the reversed string
-    for (size_t i = 0; i < reversedTitle.size(); ++i)
+    void clear()
     {
-        char ch = reversedTitle[i];
-
-        // Check if the character is valid (A-Z)
-        if (ch >= 'A' && ch <= 'Z')
+        Node *current = head;
+        while (current)
         {
-            // Calculate the decimal value of the character
-            int dec_ch = (ch - 'A' + 1);
+            Node *next = current->nex;
+            delete current;
+            current = next;
+        }
+        head = tail = nullptr;
+        len = 0;
+    }
 
-            // Check for overflow before multiplying
-            if (INT_MAX / base < ans ||
-                (INT_MAX - (ans * integerPower(base, i))) <
-                    dec_ch * integerPower(base, i))
-            {
-                throw std::overflow_error(
-                    "Column title is too long and causes an overflow.");
-            }
-
-            // Add the value to the answer
-            ans += dec_ch * integerPower(base, i);
+    void push_back(const T &value)
+    {
+        Node *newNode = new Node(value);
+        if (!tail)
+        {
+            head = tail = newNode;
         } else
         {
-            // Invalid character found
-            throw std::invalid_argument("Invalid character in column title: " +
-                                        std::string(1, ch));
+            tail->nex = newNode;
+            newNode->pre = tail;
+            tail = newNode;
+        }
+        ++len;
+    }
+
+    // Split the list into two halves
+    Node *split(Node *head)
+    {
+        if (!head || !head->nex)
+        {
+            return head;
+        }
+        Node *slow = head;
+        Node *fast = head->nex;
+        while (fast && fast->nex)
+        {
+            slow = slow->nex;
+            fast = fast->nex->nex;
+        }
+        Node *mid = slow->nex;
+        slow->nex = nullptr;
+        return mid;
+    }
+
+    // Merge two sorted lists
+    Node *merge(Node *l1, Node *l2)
+    {
+        if (!l1)
+            return l2;
+        if (!l2)
+            return l1;
+        if (l1->data < l2->data)
+        {
+            l1->nex = merge(l1->nex, l2);
+            l1->nex->pre = l1;
+            l1->pre = nullptr;
+            return l1;
+        } else
+        {
+            l2->nex = merge(l1, l2->nex);
+            l2->nex->pre = l2;
+            l2->pre = nullptr;
+            return l2;
         }
     }
 
-    return ans;
-}
-
-// Helper function to calculate power
-long integerPower(int base, size_t exp)
-{
-    long result = 1;
-    for (size_t i = 0; i < exp; ++i)
+    // Sort the list using merge sort algorithm
+    Node *merge_sort(Node *head)
     {
-        result *= base;
+        if (!head || !head->nex)
+        {
+            return head;
+        }
+        Node *mid = split(head);
+        Node *left = merge_sort(head);
+        Node *right = merge_sort(mid);
+        return merge(left, right);
     }
-    return result;
+
+    void sort()
+    {
+        head = merge_sort(head);
+        if (head)
+        {
+            tail = head;
+            while (tail->nex)
+            {
+                tail = tail->nex;
+            }
+        }
+    }
+
+    // Output the list
+    void print()
+    {
+        Node *current = head;
+        while (current)
+        {
+            std::cout << current->data << " ";
+            current = current->nex;
+        }
+        std::cout << std::endl;
+    }
+};
+
+int main()
+{
+    LinkedList< int > list;
+    list.push_back(3);
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(4);
+    list.push_back(5);
+
+    std::cout << "Original list: ";
+    list.print();
+
+    list.sort();
+
+    std::cout << "Sorted list: ";
+    list.print();
+
+    return 0;
 }
-int main() {}

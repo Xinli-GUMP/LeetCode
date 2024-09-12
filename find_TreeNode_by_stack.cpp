@@ -20,7 +20,7 @@ TreeNode *findNodeIterative(TreeNode *root, int target)
     stack< TreeNode * > s;
     s.push(root);
 
-    while (!s.empty())
+    while (!s.empty())  // stack isn't empty
     {
         TreeNode *node = s.top();
         s.pop();
@@ -29,6 +29,7 @@ TreeNode *findNodeIterative(TreeNode *root, int target)
             return node;
 
         // 右子树先入栈，深度优先搜索
+        // 因为先入栈，后出栈
         if (node->right != nullptr)
             s.push(node->right);
 

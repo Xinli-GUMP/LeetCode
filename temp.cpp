@@ -1,22 +1,19 @@
-/*
-
-
-
-*/
-
-/* 解题思路:
-
-*/
 #include <algorithm>
+#include <cctype>
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 using namespace std;
 
-int main(int argc, char const *argv[])
+int main()
 {
-    int a = 1;
-    char b = a + 64;
-    cout << '0';
-    return 0;
+    int arr[] = {1, 9, 3};
+    int *ptr = arr;
+    int * ptr2 = new int(8);
+    cout << ptr[2];
+    cout << ptr2[4];
 }

@@ -5,3 +5,4 @@ CMakeFiles/
 .vcode/
 out/
 .vs/
+*.gdb
