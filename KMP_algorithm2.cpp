@@ -61,8 +61,7 @@ void searchPatternKMP(const std::string &text, const std::string &pattern)
                           << textIndex - patternIndex
                           << std::endl;  // 输出匹配的开始位置
 
-                patternIndex =
-                    lps_array[patternIndex - 1];  // 利用LPS数组重置patternIndex
+                patternIndex = 0;  // 重置patternIndex
             }
         }
         // 当前字符不匹配

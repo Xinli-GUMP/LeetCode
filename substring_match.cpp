@@ -18,7 +18,6 @@ haystack 和 needle 仅由小写英文字符组成
 5.如果left往后needle.length个范围的字符和needl相同，则返回left
 */
 #include <iostream>
-#include <vector>
 using namespace std;
 
 // 这里采用了暴力匹配法(O(N∗M))，推荐学习KMP算法可以大幅降低时间复杂度为线性
